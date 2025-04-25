@@ -1,0 +1,94 @@
+version: "3.1"
+
+entities:
+  - email
+
+actions:
+  - action_validate_email_format
+
+slots:
+  first_name:
+    type: text
+    mappings:
+      - type: from_llm
+  last_name:
+    type: text
+    mappings:
+      - type: from_llm
+  location:
+    type: text
+    mappings:
+      - type: from_llm
+  email:
+    type: text
+    mappings:
+      - type: from_text
+        influence_conversation: true
+  email_validated:
+    type: bool
+
+responses:
+  utter_ask_first_name:
+    - text: "Can I know your first name?"
+      metadata:
+        rephrase: True
+  utter_ask_last_name:
+    - text: "Can I know your last name?"
+      metadata:
+        rephrase: True
+  utter_ask_location:
+    - text: "Where do you belong from?"
+      metadata:
+        rephrase: True
+  utter_ask_email:
+    - text: "Can I know your email"
+      metadata:
+        rephrase: True
+  utter_user_info_received: 
+    - text: "Great! Your details has been successfully stored."
+  utter_purpose_user_info: 
+    - text: "To proceed with the licensing, we'll need a few details from you: your first name, last name, location, and email address."
+  utter_greet: 
+    - text: "Hi there!"
+  utter_valid_email:
+    - text: "Please provide a valid email."
+  utter_invalid_email_format:
+    - text: "Oops! That doesn't look like a valid email. Could you try again?"
+  utter_show_user_details:
+    - text: "Here's what you've entered:\nFirst name: {first_name}\nLast name: {last_name}\nLocation: {location}\nEmail: {email}"
+      metadata:
+        rephrase: True
+  # action_default_fallback:  
+    # - text: "placeholder"
+    #   metadata:
+    #     rephrase: True
+    #     rephrase_prompt: |
+    #       This is a conversation with an AI assistant developed using Rasa.
+    #       The assistant is designed to assist the user in providing necessary details for licensing purposes, such as their name, location, and email.
+    #       The assistant is friendly, helpful, and ensures all required information is collected in the correct format.
+    #       The user is interacting with the assistant to enter their personal details for licensing, and the assistant should respond accordingly based on the input provided.
+    #       Context or previous interaction:
+    #       {{history}}
+    #       {{current_input}}
+    #       Suggested AI Response:
+  # utter_ask_recipient:
+  #   - text: "Who would you like to send money to?"
+  # utter_ask_amount:
+  #   - text: "How much money would you like to send?"
+  # utter_transfer_complete:
+  #   - text: "All done. {amount} has been sent to {recipient}."
+
+  # utter_free_chitchat_response:
+  #   - text: "placeholder"
+  #     metadata:
+  #       rephrase: True
+  #       rephrase_prompt: |
+  #         The following is a conversation with an AI assistant built with Rasa.
+  #         The assistant can help the user transfer money.
+  #         The assistant is helpful, creative, clever, and very friendly.
+  #         The user is making small talk, and the assistant should respond, keeping things light.
+  #         Context / previous conversation with the user:
+  #         {{history}}
+  #         {{current_input}}
+  #         Suggested AI Response:
+

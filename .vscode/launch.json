@@ -1,0 +1,30 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Run Rasa Shell",
+        "type": "debugpy",
+        "request": "launch",
+        "program": "/Users/kashishsaxena/Documents/python_project/.venv/bin/rasa",
+        "args": ["rasa shell"],
+        "console": "integratedTerminal"
+      },
+      {
+        "name": "Run Rasa Interactive",
+        "type": "debugpy",
+        "request": "launch",
+        "program": "/Users/kashishsaxena/Documents/python_project/.venv/bin/rasa",
+        "args": ["interactive"],
+        "console": "integratedTerminal"
+      },
+      {
+        "name": "Rasa Validate Data",
+        "type": "debugpy",
+        "request": "launch",
+        "program": "/Users/kashishsaxena/Documents/python_project/.venv/bin/rasa",
+        "args": ["data", "validate"],
+        "console": "integratedTerminal"
+      }
+    ]
+  }
+  

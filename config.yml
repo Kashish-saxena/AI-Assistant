@@ -1,0 +1,16 @@
+recipe: default.v1
+language: en
+pipeline:
+- name: NLUCommandAdapter
+- name: SingleStepLLMCommandGenerator
+  llm:
+    model_group: rasa_command_generation_model
+  flow_retrieval:
+    active: false
+
+policies:
+- name: RulePolicy
+- name: FlowPolicy
+  use_regexes: true
+#  - name: EnterpriseSearchPolicy
+assistant_id: 20250425-121340-shortest-hub

@@ -1,0 +1,39 @@
+flows:
+  say_hello:
+    description: Greet user
+    steps:
+      - action: utter_purpose_user_info
+      - link: get_user_information
+  get_user_information:
+    description: Help user to enter the details like first_name, last_name and location and email for licencing
+    persisted_slots:
+      - first_name
+      - last_name
+      - location
+      - email
+    steps:
+      - collect: first_name
+        description: Help the user by asking for the first name
+      - collect: last_name
+        description: Help the user by asking  for the last name
+      - collect: location
+        description: Help the user by asking  for the loction(city)
+      - collect: email
+        description: Help the user by asking for the email id
+      - action: action_validate_email_format
+        next:
+          - if: "slots.email is not null and slots.email != '' and slots.email_validated == true"
+            then:
+              - action: utter_user_info_received
+                next: END
+          - else:
+              - collect: email
+              - action: action_validate_email_format
+                next: END
+                   
+
+
+  # email_validation:
+  #   description: Validates the format of the collected user email address using a custom action.
+  #   steps:
+  #     - action: action_validate_email_format
