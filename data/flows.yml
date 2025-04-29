@@ -1,39 +1,65 @@
 flows:
-  say_hello:
-    description: Greet user
+  greet: 
+    description: "When user comes and greets us with hi, hello, etc."
     steps:
-      - action: utter_purpose_user_info
-      - link: get_user_information
-  get_user_information:
-    description: Help user to enter the details like first_name, last_name and location and email for licencing
+      - link: user_information
+  user_information:
+    name: user information
+    description: "To proceed with your application for a [Name of License] in [Issuing Authority/Region], we require some basic identification and contact information. Please provide the following details to continue: your name, location, phone number and email address (for updates and communication)."
     persisted_slots:
-      - first_name
-      - last_name
-      - location
-      - email
+    - first_name
+    - location
+    - email
+    - phone_number
     steps:
       - collect: first_name
-        description: Help the user by asking for the first name
-      - collect: last_name
-        description: Help the user by asking  for the last name
+        description: "Ask in a friendly way: I'd love to know who I'm chatting with—what's your name?"
       - collect: location
-        description: Help the user by asking  for the loction(city)
+        description: "Which city are you currently based in? This helps us provide location-specific information."
+      - collect: phone_number
+        description: "Perfect! And just in case we need to reach you quickly, what's a good phone number to contact you?"
       - collect: email
-        description: Help the user by asking for the email id
+        description: "I'd like to send you some helpful resources about your license—what's your email address?"
       - action: action_validate_email_format
         next:
-          - if: "slots.email is not null and slots.email != '' and slots.email_validated == true"
+          - if: "slots.email_validated == true"
             then:
               - action: utter_user_info_received
+              - action: action_listen 
                 next: END
           - else:
-              - collect: email
-              - action: action_validate_email_format
+              - link: loop_email_validation
+          
+  loop_email_validation:
+    description: Re-ask for email until valid
+    persisted_slots: 
+    - newEmail
+    steps:
+      - collect: newEmail
+        description: "That email format doesn't look quite right. Could you please share a valid email address where we can send your license information?"
+      - action: action_validate_email_format
+        next:
+          - if: "slots.email_validated == true"
+            then:
+              - action: utter_user_info_received
+              - action: action_listen 
                 next: END
-                   
+          - else:
+              - link: loop_email_validation
 
-
-  # email_validation:
-  #   description: Validates the format of the collected user email address using a custom action.
-  #   steps:
-  #     - action: action_validate_email_format
+  phone_number_validation:
+    description: Re-ask for phone number until valid
+    persisted_slots: 
+    - phone_number
+    steps: 
+      - collect: phone_number
+        description: "That phone number format doesn't look quite right. Could you please share a valid phone number where we can send your license information?"
+      - action: action_validate_phone_number_format
+        next: 
+          - if: "slots.phone_number_validated == true"
+            then:
+              - action: action_listen 
+                next: END
+          - else:
+              - action: utter_invalid_phone_number_format
+              - link: phone_number_validation
