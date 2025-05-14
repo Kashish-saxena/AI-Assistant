@@ -1,16 +1,24 @@
 recipe: default.v1
 language: en
+
 pipeline:
-- name: NLUCommandAdapter
-- name: SingleStepLLMCommandGenerator
-  llm:
-    model_group: rasa_command_generation_model
-  flow_retrieval:
-    active: false
+  - name: NLUCommandAdapter
+  - name: SingleStepLLMCommandGenerator
+    llm:
+      model_group: rasa_command_generation_model
+    flow_retrieval:
+      active: false
+  - name: WhitespaceTokenizer
+  - name: RegexFeaturizer 
+  - name: CountVectorsFeaturizer
+  - name: DIETClassifier
+    constrain_similarities: True
+    epochs: 100
+
 
 policies:
-- name: RulePolicy
-- name: FlowPolicy
-  use_regexes: true
+  - name: RulePolicy
+  - name: FlowPolicy
+    use_regexes: true
 #  - name: EnterpriseSearchPolicy
 assistant_id: 20250425-121340-shortest-hub

@@ -1,0 +1,132 @@
+version: "3.1"
+
+nlu:
+  - regex: phone_number
+    examples: |
+      - \+?(\d[\d\s-]{7,14}\d)
+      - [6-9]\d{9}
+      - ^\+?\d{10,15}$
+
+  - regex: email
+    examples: |
+      - [a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}
+
+  - intent: provide_user_info
+    examples: |
+      - my email is [test@example.com](email)
+      - you can contact me at [user123@domain.com](email)
+      - my name is [John](name)
+      - I'm [Sarah](name)
+      - I am [Michael](name)
+      - I live in [Delhi](location)
+      - I'm from [Mumbai](location)
+      - my location is [Bangalore](location)
+      - my phone number is [9876543210](phone_number)
+      - you can reach me at [8765432109](phone_number)
+      - my name is [Kashish](name) and email is [test@example.com](email)
+      - you can email me at [user@domain.com](email)
+      - My name is [Kashish](name) and I live in [Delhi](location)
+      - I'm [Alex](name) from [Chennai](location)
+      - My name is [Raj](name) and my phone is [9876543210](phone_number)
+      - I'm [Kashish](name), I live in [Hyderabad](location) and my email is [kashish@example.com](email)
+      - my email is [kashish.saxena@google.com](email)
+      - it's [kashish.saxena@google.com](email)
+      - sure it's [kashish.saxena@google.com](email)
+      - you can contact me at [kashish.saxena@google.com](email)
+      - [kashish.saxena@google.com](email)
+      - reach me via my contact i.e [8787656787](phone_number) 
+
+  - intent: ask_license_info
+    examples: |
+      - I need contractor license in [California](location)
+      - How do I apply for a contractor license?
+      - Tell me the steps for contractor license in [CA](location)
+      - i want a driver's license
+      - i live in Berlin(location)
+      - [california](location)
+      - I am from [Berlin](location)
+      - [Delhi](location)
+      - based in [New York](location)
+      - I'd like to  apply for a contactor's licence
+      - i am applying for a doctor's license
+      - Hi, i want a contractor's licence in [germany](location) 
+      - it is a food business license 
+
+  - intent: greet
+    examples: |
+      - hi
+      - hello
+      - hey
+      - good morning
+      - good evening
+      - hey there
+      - hi there
+      - hello there
+      - greetings
+
+  - intent: affirm
+    examples: |
+      - yes
+      - yeah
+      - yep
+      - of course
+      - definitely
+      - sure
+      - absolutely
+      - that's right
+      - sounds good
+      - okay
+      - ok
+      - alright
+      - indeed
+
+  - intent: deny
+    examples: |
+      - no
+      - no thanks
+      - no thank you
+      - nothing
+      - nope
+      - I'm good
+      - that's all
+      - nah
+      - not really
+
+  - intent: fetch_user_details
+    examples: |
+      - I want to check my details
+      - Can you fetch my information?
+      - Show me my profile
+      - show me the details that I have provided you
+
+  - intent: interrupt_with_new_flow
+    examples: |
+      - I want a business license
+      - I'm looking for a business license
+      - I need a license for my company
+      - I need a food license
+      - It's a driving license
+      - i want information regarding business license
+      - I am looking for a contractor's license
+      - licence
+      - I want some information about licencing
+      - I need to do something else first
+      - Let's pause this and start another flow
+      - I'd like to switch to a different taske a 
+      - It's [kashish.saxena@sucessive.tech](email), also create a to do list for the licensing procedure 
+
+  - intent: update_user_info
+    examples: |
+      - change my name to [Poonam](name)
+      - update my email to [john@example.com](email)
+      - please correct my name to [Anjali](email)
+
+  - intent: user_information_with_query
+    examples: |
+      - It's [kashish.saxena@sucessive.tech](email), also create a to do list for the licensing procedure 
+      - My name is [John Doe](name) and I need help with my license.
+      - Here's my email [john.doe@example.com](email), can you guide me on the licensing process?
+      - I am from [New York](location), please share the licensing process.
+      - My phone number is [1234567890](phone_number) and I need a to-do list for license.
+      - Can you tell me the process? My email is [john.doe@example.com](email).
+

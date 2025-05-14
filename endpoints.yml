@@ -26,8 +26,8 @@ action_endpoint:
 #    use_ssl: <whether or not the communication is encrypted, default false>
 
 tracker_store:
-  type: mongod
-  url: mongodb+srv://kashishsaxena:kgyHvfPT03F4lc1I@conversations.mxvtpaa.mongodb.net/?retryWrites=true&w=majority&appName=Conversations
+  type: mongo
+  url: mongodb+srv://kashishsaxena:kgyHvfPT03F4lc1I@conversations.mxvtpaa.mongodb.net/?retryWrites=true&w=majority&appName=Conversations&tls=true&tlsCAFile=/Users/kashishsaxena/Documents/python_project/.venv/lib/python3.10/site-packages/certifi/cacert.pem
   db: CreateEvent
   collection: conversations
   username: kashishsaxena

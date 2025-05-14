@@ -1,111 +1,140 @@
 version: "3.1"
 
+intents: 
+  - provide_user_info
+  - fetch_user_details
+  - ask_license_info
+  - greet
+  - affirm
+  - deny
+  - interrupt_with_new_flow
+  - update_user_info
+  - user_information_with_query
+  # - specify_license_type
+
 entities:
   - email
-  - first_name
+  - name
   - location
   - phone_number
-
-actions:
-  - action_validate_email_format
-  - action_validate_phone_number_format
+  - license_type
 
 slots:
-  first_name:
+  name:
     type: text
+    influence_conversation: true
     mappings:
+      - type: from_entity
+        entity: name
       - type: from_llm
+
   location:
     type: text
+    influence_conversation: true
     mappings:
+      - type: from_entity
+        entity: location
       - type: from_llm
+
   email:
     type: text
+    influence_conversation: true
     mappings:
+      - type: from_entity
+        entity: email
       - type: from_llm
+
   phone_number:
     type: text
+    influence_conversation: true
     mappings:
+      - type: from_entity
+        entity: phone_number
       - type: from_llm
-  email_validated:
-    type: bool
-  phone_number_validated:
-    type: bool
-  newEmail:   
+
+  interrupted_flow:
     type: text
     mappings:
-      - type: from_llm
+    - type: controlled  
+      conditions:
+      - active_loop: null
 
+  location_acknowledged:
+    type: bool
+    influence_conversation: false
+
+forms:
+  user_information:
+    required_slots:
+      - name
+      - location
+      - phone_number
+      - email
 
 responses:
-  utter_ask_first_name:
-    - text: "I'd love to know who I'm chatting with today—what's your name?"
+  utter_greet_and_license_info:
+    - text: "greet and then guide the user properly about the license  and it's need"
+      metadata:
+        rephrase: True  
+
+  utter_ask_name:
+    - text: "I'd love to personalize your licensing assistance—may I know your name?"
       metadata:
         rephrase: True
-  utter_ask_last_name:
-    - text: "Great to meet you! Could I get your last name as well?"
-    - text: "Wonderful! What's your last name?"
-      metadata:
-        rephrase: True
-  
+
   utter_ask_location:
-    - text: "And which city do you call home these days?"
+    - text: "To guide you better with the licensing steps, which city are you currently based in?"
       metadata:
         rephrase: True
-  
+
   utter_ask_email:
-    - text: "I'd like to keep you updated on your license application—what's your email address?"
+    - text: "To make sure you receive all important updates about your license application, could you share your email address?"
       metadata:
         rephrase: True
-  
+
   utter_ask_phone_number:
-    - text: "Just in case we need to reach you about your license, what's your phone number?"
+    - text: "To keep you updated about your licensing process and any important steps, could you please share your phone number?"
       metadata:
         rephrase: True
-  
+
   utter_random_stuff_response:
     - text: "I see you're asking about something else! Let me know if you'd like to talk about anything specific. By the way, I still need to know where you're based."
-    
+
   utter_user_info_received: 
     - text: "Perfect! I've got all your details saved. We'll be in touch soon about your license application. Is there anything else you'd like to know in the meantime?"
       metadata:
         rephrase: True
 
-  utter_purpose_user_info: 
-    - text: "To help you with your license, I'll need just a few quick details from you: your name, where you're located, and how we can contact you."
-      metadata:
-        rephrase: True  
 
-  utter_greet: 
-    - text: "Hi there! Welcome to our license application assistant. How can I help you today?"
-    - text: "Hello! I'm here to help with your license application. What brings you here today?"
+  utter_invalid_email:
+    - text: "Hmm, that email address doesn't seem quite right."
       metadata:
         rephrase: True
 
-  utter_valid_email:
-    - text: "Thanks for providing a valid email address!"
-      metadata:
-        rephrase: True
-
-  utter_ask_newEmail:
-    - text: "Hmm, that email address doesn't seem quite right. Could you check the format and try again? We need this to send you important information about your license."
-      metadata:
-        rephrase: True
-
-  utter_invalid_email_format:
-    - text: "Hmm, that email address doesn't seem quite right. Could you check the format and try again? We need this to send you important information about your license."
-      metadata:
-        rephrase: True
-
-  utter_invalid_phone_number_format:
-    - text: "Hmm, that phone number doesn't seem quite right. Could you check the format and try again? We need this to send you important information about your license."
+  utter_invalid_phone_number:
+    - text: "Hmm, that phone number doesn't seem quite right."
       metadata:
         rephrase: True
 
   utter_show_user_details:
-    - text: "Here's the information I have so far:\n• Name: {first_name} {last_name}\n• Location: {location}\n• Email: {email}\n• Phone: {phone_number}\n\nIs all of this correct?"
+    - text: |
+        Here's the information I have so far:
+        • Name: {name}
+        • Location: {location}
+        • Email: {email}
+        • Phone: {phone_number}
+        
+        Is all of this correct?
       metadata:
         rephrase: True
+
+  utter_acknowledge_more_questions:
+    - text: "Alright! Feel free to ask any other questions. I'm here to help."
+
+  utter_location_confirmation:
+    - text: "So you're from {location}."
+      metadata:
+        rephrase: true
 
   utter_free_chitchat_response:
     - text: "placeholder"
@@ -118,5 +147,28 @@ responses:
           The assistant naturally collects user information while maintaining a warm, supportive tone.
           Context / previous conversation with the user:
           {{history}}
-          {{current_input}}
           Suggested AI Response:
+    
+  utter_license_info_with_ollama:
+    - text: "placeholder"
+      metadata:
+        rephrase: True
+        rephrase_prompt: |
+          You are an AI assistant specialized in helping people understand the licensing procedures in countries.
+          You are helpful, clear, and friendly. Based on the conversation so far, guide the user on what steps or procedures to take before applying for a licence.
+          Context / previous conversation with the user:
+          {{history}}
+          Suggested AI Response:
+
+actions:
+  - action_update_user_info
+  - action_check_all_user_info_slots_filled
+  - action_complete_new_flow_and_resume
+  - action_check_location_and_trigger_flow
+  - action_extract_multiple_slots
+  - action_check_slot_filled
+  - action_fetch_user_details
+  - action_rephrased_license_info
+  - action_new_extract_multiple_slots
+  - action_interrupt_and_start_new_flow
+  - action_activate_new_flow

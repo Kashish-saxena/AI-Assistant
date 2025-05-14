@@ -1,0 +1,53 @@
+version: "3.1"
+
+rules:
+  - rule: Greet the user
+    steps:
+      - intent: greet
+      - action: utter_greet_and_license_info
+
+  - rule: Respond with license info
+    steps:
+      - intent: ask_license_info
+      - action: action_check_location_and_trigger_flow
+
+  - rule: Continue user info after license query
+    steps:
+      - intent: affirm
+      - action: user_information
+
+  - rule: Pause if user is not ready
+    steps:
+      - intent: deny
+      - action: utter_acknowledge_more_questions
+
+  - rule: Respond to greet even in active flows
+    condition:
+      - active_loop: user_information
+    steps:
+      - intent: greet
+
+  # - rule: Interrupt active flow
+  #   condition:
+  #     - active_loop: user_information 
+  #   steps:
+  #     - intent: interrupt_with_new_flow
+  #     - action: action_interrupt_and_start_new_flow
+
+  - rule: Handle user info updates
+    steps:
+      - intent: update_user_info
+      - action: action_update_user_info
+
+  - rule: Respond to user query with user details
+    steps:
+      - intent: user_information_with_query
+      - action: utter_free_chitchat_response
+      - action: action_listen
+
+  # - rule: Handle license type specification
+  #   steps:
+  #     - intent: specify_license_type
+      # - slot_was_set:
+      #   - license_type: true
+      # - action: action_rephrased_license_info

@@ -5,7 +5,12 @@ flows:
     steps:
       - action: utter_free_chitchat_response
   pattern_search:
-    description: Flow for handling knowledge-based questions
+    description: Flow for handling knowledge-based questions — should NOT respond to greetings or other defined intents
     name: pattern search
     steps:
       - action: utter_free_chitchat_response
+  pattern_license_info:
+    description: Handle user queries related to license information
+    name: pattern license info
+    steps:
+      - action: user_information

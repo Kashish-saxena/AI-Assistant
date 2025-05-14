@@ -1,65 +1,91 @@
 flows:
-  greet: 
-    description: "When user comes and greets us with hi, hello, etc."
+  greet:
+    name: greet user
+    description: greet user in a friendly way
+    nlu_trigger:
+      - intent: greet
     steps:
+      - action: utter_greet_and_license_info
       - link: user_information
+
   user_information:
     name: user information
-    description: "To proceed with your application for a [Name of License] in [Issuing Authority/Region], we require some basic identification and contact information. Please provide the following details to continue: your name, location, phone number and email address (for updates and communication)."
+    description: As part of helping you with licensing information, you will ask for your name, email, and phone number during our chat—just to make sure we can keep you updated and support you better.
+    nlu_trigger:
+      - intent: provide_user_info
     persisted_slots:
-    - first_name
+    - name
     - location
     - email
     - phone_number
     steps:
-      - collect: first_name
-        description: "Ask in a friendly way: I'd love to know who I'm chatting with—what's your name?"
-      - collect: location
-        description: "Which city are you currently based in? This helps us provide location-specific information."
-      - collect: phone_number
-        description: "Perfect! And just in case we need to reach you quickly, what's a good phone number to contact you?"
-      - collect: email
-        description: "I'd like to send you some helpful resources about your license—what's your email address?"
-      - action: action_validate_email_format
-        next:
-          - if: "slots.email_validated == true"
-            then:
-              - action: utter_user_info_received
-              - action: action_listen 
-                next: END
-          - else:
-              - link: loop_email_validation
-          
-  loop_email_validation:
-    description: Re-ask for email until valid
-    persisted_slots: 
-    - newEmail
-    steps:
-      - collect: newEmail
-        description: "That email format doesn't look quite right. Could you please share a valid email address where we can send your license information?"
-      - action: action_validate_email_format
-        next:
-          - if: "slots.email_validated == true"
-            then:
-              - action: utter_user_info_received
-              - action: action_listen 
-                next: END
-          - else:
-              - link: loop_email_validation
+      - action: action_extract_multiple_slots
+      - action: action_check_slot_filled
 
-  phone_number_validation:
-    description: Re-ask for phone number until valid
-    persisted_slots: 
-    - phone_number
-    steps: 
+      - collect: name
+        description: Ask user their name
+
+      - action: action_extract_multiple_slots
+      - action: action_check_slot_filled
+
+      - collect: location
+        description: Which city are you currently based in? This helps us provide location-specific information.
+      - action: action_check_location_and_trigger_flow
+
+      - action: action_extract_multiple_slots
+      - action: action_check_slot_filled
+
       - collect: phone_number
-        description: "That phone number format doesn't look quite right. Could you please share a valid phone number where we can send your license information?"
-      - action: action_validate_phone_number_format
-        next: 
-          - if: "slots.phone_number_validated == true"
-            then:
-              - action: action_listen 
-                next: END
-          - else:
-              - action: utter_invalid_phone_number_format
-              - link: phone_number_validation
+        description: Just in case we need to reach you quickly, what's a good phone number to contact you?
+        rejections:
+          - if: not ( slots.phone_number matches "^\+?\d{10,15}$" )
+            action: ""
+            utter: utter_invalid_phone_number
+
+      - action: action_extract_multiple_slots
+      - action: action_check_slot_filled
+
+      - collect: email
+        description: I'd like to send you some helpful resources about your license—what's your email address?
+        rejections:
+          - if: not ( slots.email matches "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" )
+            action: ""
+            utter: utter_invalid_email
+
+      - action: action_check_all_user_info_slots_filled
+      - action: action_listen
+
+  fetch_user_details:
+    name: Fetch user details from database
+    description: Fetch stored user info from MongoDB
+    nlu_trigger:
+      - intent: fetch_user_details
+    steps:
+      - action: action_fetch_user_details
+
+  get_licence_information:
+    description: Handle license-related questions
+    persisted_slots: 
+    - location
+    steps:
+      - collect: location
+      - action: action_rephrased_license_info
+      - link: user_information
+
+  user_information_and_user_query:
+    description: In case the user provides info and asks a query together.
+    nlu_trigger:
+      - intent: user_information_with_query
+    steps: 
+      - action: action_new_extract_multiple_slots
+      - action: utter_free_chitchat_response
+      - action: action_listen
+
+  # license_type_query: 
+  #   description: Handle license query after user info
+  #   nlu_trigger:
+  #     - intent: specify_license_type 
+  #   steps:
+  #     - action: action_new_extract_multiple_slots
+  #     - action: action_check_location_and_trigger_flow
+      
